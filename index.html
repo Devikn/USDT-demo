@@ -3,57 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flash USDT Demo</title>
+  <title>Flash USDT Simulator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1d2b64, #f8cdda);
+      color: #fff;
       text-align: center;
-      padding-top: 50px;
+      padding-top: 60px;
+      margin: 0;
     }
-    #connectBtn {
-      padding: 10px 20px;
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 12px 24px;
       font-size: 16px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #00c2cb;
+      color: white;
       cursor: pointer;
+      transition: background 0.3s;
     }
-    #status {
+    button:hover {
+      background-color: #00a6af;
+    }
+    #container {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      margin: auto;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 12px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      margin-top: 15px;
+      border-radius: 6px;
+      border: none;
+    }
+    #status, #balanceDisplay {
       margin-top: 20px;
       font-weight: bold;
-      color: #333;
     }
   </style>
 </head>
 <body>
-  <h1>Flash USDT Demo</h1>
-  <button id="connectBtn">Connect MetaMask</button>
-  <p id="status">Checking for MetaMask...</p>
+
+  <div id="container">
+    <h1>Flash USDT Simulator</h1>
+    <button id="connectBtn">🔗 Connect MetaMask</button>
+    <div id="status">Checking for MetaMask...</div>
+
+    <div id="walletSection" style="display: none;">
+      <div id="balanceDisplay">USDT Balance: 0.00</div>
+
+      <button id="fakeSendBtn">➖ Fake Send 100 USDT</button>
+      <button id="fakeReceiveBtn">➕ Fake Receive 500 USDT</button>
+
+      <div style="margin-top: 20px;">
+        <input type="number" id="customBalance" placeholder="Enter custom balance" />
+        <br/>
+        <button id="setBalanceBtn">Set Balance</button>
+      </div>
+    </div>
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const connectBtn = document.getElementById("connectBtn");
       const status = document.getElementById("status");
+      const walletSection = document.getElementById("walletSection");
+      const balanceDisplay = document.getElementById("balanceDisplay");
+      const fakeSendBtn = document.getElementById("fakeSendBtn");
+      const fakeReceiveBtn = document.getElementById("fakeReceiveBtn");
+      const setBalanceBtn = document.getElementById("setBalanceBtn");
+      const customBalanceInput = document.getElementById("customBalance");
+
+      let fakeBalance = 9999999.00;
+
+      function updateBalance() {
+        balanceDisplay.textContent = USDT Balance: ${fakeBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })};
+      }
 
       if (typeof window.ethereum !== "undefined") {
-        status.innerText = "MetaMask is detected.";
+        status.textContent = "✅ MetaMask detected. Please connect your wallet.";
         connectBtn.addEventListener("click", async () => {
           try {
             const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-            status.innerText = "Connected: " + accounts[0];
-            console.log("Connected account:", accounts[0]);
+            status.textContent = ✅ Connected: ${accounts[0]};
+            walletSection.style.display = "block";
+            updateBalance();
           } catch (error) {
-            status.innerText = "Connection failed or rejected.";
+            status.textContent = "❌ Connection rejected or failed.";
             console.error(error);
           }
         });
       } else {
-        status.innerText = "MetaMask not detected. Please install MetaMask.";
+        status.textContent = "❌ MetaMask not detected. Please install it.";
       }
+
+      fakeSendBtn.addEventListener("click", () => {
+        if (fakeBalance >= 100) {
+          fakeBalance -= 100;
+          updateBalance();
+          alert("Fake 100 USDT sent!");
+        } else {
+          alert("Insufficient balance.");
+        }
+      });
+
+      fakeReceiveBtn.addEventListener("click", () => {
+        fakeBalance += 500;
+        updateBalance();
+        alert("Fake 500 USDT received!");
+      });
+
+      setBalanceBtn.addEventListener("click", () => {
+        const inputVal = parseFloat(customBalanceInput.value);
+        if (!isNaN(inputVal) && inputVal >= 0) {
+          fakeBalance = inputVal;
+          updateBalance();
+          alert("Fake balance updated!");
+        } else {
+          alert("Please enter a valid number.");
+        }
+      });
     });
   </script>
-</body>
-</html>
-    }
-  });
-</script>
+
 </body>
 </html>
