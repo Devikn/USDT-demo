@@ -1,56 +1,55 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const connectBtn = document.getElementById('connectBtn');
-  const status = document.getElementById('status');
-  const walletUI = document.getElementById('walletUI');
-  const balance = document.getElementById('balance');
-  const sendBtn = document.getElementById('sendBtn');
-  const receiveBtn = document.getElementById('receiveBtn');
-  const customAmount = document.getElementById('customAmount');
-  const setBtn = document.getElementById('setBtn');
+const contractAddress = "0xD20Ecb072145678B5853B7563EE5dc0a6E6981d9"; // Controller mask or USDT
 
-  let fakeBalance = 0.00;
-
-  function updateBalanceDisplay() {
-    balance.textContent = USDT Balance: ${fakeBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })};
-  }
-
-  if (typeof window.ethereum !== 'undefined') {
-    status.textContent = '✅ MetaMask detected — click connect';
-  } else {
-    status.textContent = '❌ Install MetaMask';
-    connectBtn.disabled = true;
-  }
-
-  connectBtn.addEventListener('click', async () => {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      status.textContent = Connected: ${accounts[0].slice(0,6)}...${accounts[0].slice(-4)};
-      walletUI.classList.remove("hidden");
-      fakeBalance = 9999999.00;
-      updateBalanceDisplay();
-    } catch {
-      status.textContent = '❌ Connection failed';
+const usdtAbi = [
+    {
+        constant: true,
+        inputs: [{ name: "_owner", type: "address" }],
+        name: "balanceOf",
+        outputs: [{ name: "balance", type: "uint256" }],
+        type: "function"
+    },
+    {
+        constant: true,
+        inputs: [],
+        name: "decimals",
+        outputs: [{ name: "", type: "uint8" }],
+        type: "function"
     }
-  });
+];
 
-  sendBtn.addEventListener('click', () => {
-    if (fakeBalance >= 100) {
-      fakeBalance -= 100;
-      updateBalanceDisplay();
-      alert('✅ Fake 100 USDT sent!');
-    } else alert('❌ Insufficient balance');
-  });
+async function connectWallet() {
+    if (typeof window.ethereum !== "undefined") {
+        try {
+            await window.ethereum.request({ method: "eth_requestAccounts" });
+            const web3 = new Web3(window.ethereum);
+            const accounts = await web3.eth.getAccounts();
+            const userAddress = accounts[0];
 
-  receiveBtn.addEventListener('click', () => {
-    fakeBalance += 500;
-    updateBalanceDisplay();
-    alert('✅ Fake 500 USDT received!');
-  });
+            document.getElementById("wallet").innerText = Connected: ${userAddress};
+            getUSDTBalance(web3, userAddress);
+        } catch (err) {
+            console.error("Wallet connection failed:", err);
+        }
+    } else {
+        alert("Please install MetaMask to use this dApp.");
+    }
+}
 
-  setBtn.addEventListener('click', () => {
-    const val = parseFloat(customAmount.value);
-    if (!isNaN(val) && val >= 0) {
-      fakeBalance = val;
+async function getUSDTBalance(web3, userAddress) {
+    const contract = new web3.eth.Contract(usdtAbi, contractAddress);
+
+    try {
+        const balance = await contract.methods.balanceOf(userAddress).call();
+        const decimals = await contract.methods.decimals().call();
+        const adjustedBalance = balance / (10 ** decimals);
+
+        document.getElementById("balance").innerText = USDT Balance: ${adjustedBalance};
+    } catch (err) {
+        console.error("Error fetching balance:", err);
+    }
+}
+
+document.getElementById("connect").addEventListener("click", connectWallet);
       updateBalanceDisplay();
       alert(Balance set to ${val});
     } else alert('❌ Invalid amount');
