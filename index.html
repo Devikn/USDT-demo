@@ -1,29 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Professional Flash USDT Simulator</title>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8" />
+    <title>Flash USDT dApp</title>
+    <link rel="icon" href="favicon.ico" />
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.1/dist/web3.min.js"></script>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        button { padding: 0.5rem 1rem; font-size: 1rem; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Flash USDT Simulator</h1>
-    <button id="connectBtn">🔗 Connect MetaMask</button>
-    <div id="status">Initializing...</div>
-    <div id="walletUI" class="hidden">
-      <div id="balance">USDT Balance: 0.00</div>
-      <button id="sendBtn">➖ Fake Send 100</button>
-      <button id="receiveBtn">➕ Fake Receive 500</button>
-      <input type="number" id="customAmount" placeholder="Set custom balance" />
-      <button id="setBtn">Set Balance</button>
-    </div>
-  </div>
-  <script src="app.js" defer></script>
-</body>
-</html>
-    });
-  </script>
+    <h1>Flash USDT Balance Checker</h1>
+    <button id="connect">Connect MetaMask</button>
+    <p id="wallet">Not connected</p>
+    <p id="balance">USDT Balance: --</p>
 
+    <script src="app.js"></script>
 </body>
 </html>
