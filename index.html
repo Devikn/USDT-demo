@@ -2,142 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>USDT Simulator</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f2027;
-      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
-      color: #fff;
-      text-align: center;
-      padding: 50px 20px;
-    }
-    h1 {
-      font-size: 2em;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 12px 20px;
-      font-size: 16px;
-      margin: 10px;
-      border: none;
-      border-radius: 6px;
-      background-color: #00c2cb;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #009aa1;
-    }
-    input {
-      margin-top: 10px;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      width: 70%;
-      font-size: 16px;
-    }
-    #box {
-      margin-top: 30px;
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 30px;
-      border-radius: 10px;
-      display: inline-block;
-      min-width: 300px;
-    }
-    #balance {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    #status {
-      margin-top: 10px;
-      font-style: italic;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Professional Flash USDT Simulator</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
-  <h1>Flash USDT Simulator</h1>
-
-  <div id="box">
+  <div class="container">
+    <h1>Flash USDT Simulator</h1>
     <button id="connectBtn">🔗 Connect MetaMask</button>
-    <div id="status">Looking for MetaMask...</div>
-
-    <div id="walletUI" style="display:none;">
+    <div id="status">Initializing...</div>
+    <div id="walletUI" class="hidden">
       <div id="balance">USDT Balance: 0.00</div>
       <button id="sendBtn">➖ Fake Send 100</button>
       <button id="receiveBtn">➕ Fake Receive 500</button>
-
-      <div>
-        <input type="number" id="customAmount" placeholder="Set custom balance" />
-        <br />
-        <button id="setBtn">Set Balance</button>
-      </div>
+      <input type="number" id="customAmount" placeholder="Set custom balance" />
+      <button id="setBtn">Set Balance</button>
     </div>
   </div>
-
-  <script>
-    let fakeBalance = 0.00;
-    const connectBtn = document.getElementById('connectBtn');
-    const status = document.getElementById('status');
-    const walletUI = document.getElementById('walletUI');
-    const balance = document.getElementById('balance');
-    const sendBtn = document.getElementById('sendBtn');
-    const receiveBtn = document.getElementById('receiveBtn');
-    const customAmount = document.getElementById('customAmount');
-    const setBtn = document.getElementById('setBtn');
-
-    function updateBalanceDisplay() {
-      balance.textContent = USDT Balance: ${fakeBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })};
-    }
-
-    if (typeof window.ethereum !== 'undefined') {
-      status.textContent = '✅ MetaMask detected. Click connect.';
-    } else {
-      status.textContent = '❌ MetaMask not found. Please install it.';
-      connectBtn.disabled = true;
-    }
-
-    connectBtn.addEventListener('click', async () => {
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        status.textContent = Connected: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)};
-        walletUI.style.display = 'block';
-        fakeBalance = 9999999.00;
-        updateBalanceDisplay();
-      } catch (err) {
-        status.textContent = '❌ Connection failed.';
-      }
-    });
-
-    sendBtn.addEventListener('click', () => {
-      if (fakeBalance >= 100) {
-        fakeBalance -= 100;
-        updateBalanceDisplay();
-        alert('✅ Fake 100 USDT sent!');
-      } else {
-        alert('❌ Not enough balance!');
-      }
-    });
-
-    receiveBtn.addEventListener('click', () => {
-      fakeBalance += 500;
-      updateBalanceDisplay();
-      alert('✅ Fake 500 USDT received!');
-    });
-
-    setBtn.addEventListener('click', () => {
-      const val = parseFloat(customAmount.value);
-      if (!isNaN(val) && val >= 0) {
-        fakeBalance = val;
-        updateBalanceDisplay();
-        alert(✅ Balance set to ${val});
-      } else {
-        alert('❌ Invalid amount');
-      }
+  <script src="app.js" defer></script>
+</body>
+</html>
     });
   </script>
 
