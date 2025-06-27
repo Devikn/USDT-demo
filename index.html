@@ -2,138 +2,142 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Flash USDT Simulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>USDT Simulator</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #1d2b64, #f8cdda);
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f2027;
+      background: linear-gradient(to right, #2c5364, #203a43, #0f2027);
       color: #fff;
       text-align: center;
-      padding-top: 60px;
-      margin: 0;
+      padding: 50px 20px;
     }
     h1 {
       font-size: 2em;
       margin-bottom: 10px;
     }
     button {
-      padding: 12px 24px;
+      padding: 12px 20px;
       font-size: 16px;
       margin: 10px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       background-color: #00c2cb;
       color: white;
       cursor: pointer;
-      transition: background 0.3s;
     }
     button:hover {
-      background-color: #00a6af;
-    }
-    #container {
-      background: rgba(0, 0, 0, 0.5);
-      padding: 30px;
-      margin: auto;
-      width: 90%;
-      max-width: 500px;
-      border-radius: 12px;
+      background-color: #009aa1;
     }
     input {
+      margin-top: 10px;
       padding: 10px;
-      font-size: 16px;
-      width: 80%;
-      margin-top: 15px;
       border-radius: 6px;
       border: none;
+      width: 70%;
+      font-size: 16px;
     }
-    #status, #balanceDisplay {
+    #box {
+      margin-top: 30px;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+      min-width: 300px;
+    }
+    #balance {
       margin-top: 20px;
+      font-size: 20px;
       font-weight: bold;
+    }
+    #status {
+      margin-top: 10px;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
 
-  <div id="container">
-    <h1>Flash USDT Simulator</h1>
+  <h1>Flash USDT Simulator</h1>
+
+  <div id="box">
     <button id="connectBtn">🔗 Connect MetaMask</button>
-    <div id="status">Checking for MetaMask...</div>
+    <div id="status">Looking for MetaMask...</div>
 
-    <div id="walletSection" style="display: none;">
-      <div id="balanceDisplay">USDT Balance: 0.00</div>
+    <div id="walletUI" style="display:none;">
+      <div id="balance">USDT Balance: 0.00</div>
+      <button id="sendBtn">➖ Fake Send 100</button>
+      <button id="receiveBtn">➕ Fake Receive 500</button>
 
-      <button id="fakeSendBtn">➖ Fake Send 100 USDT</button>
-      <button id="fakeReceiveBtn">➕ Fake Receive 500 USDT</button>
-
-      <div style="margin-top: 20px;">
-        <input type="number" id="customBalance" placeholder="Enter custom balance" />
-        <br/>
-        <button id="setBalanceBtn">Set Balance</button>
+      <div>
+        <input type="number" id="customAmount" placeholder="Set custom balance" />
+        <br />
+        <button id="setBtn">Set Balance</button>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const connectBtn = document.getElementById("connectBtn");
-      const status = document.getElementById("status");
-      const walletSection = document.getElementById("walletSection");
-      const balanceDisplay = document.getElementById("balanceDisplay");
-      const fakeSendBtn = document.getElementById("fakeSendBtn");
-      const fakeReceiveBtn = document.getElementById("fakeReceiveBtn");
-      const setBalanceBtn = document.getElementById("setBalanceBtn");
-      const customBalanceInput = document.getElementById("customBalance");
+    let fakeBalance = 0.00;
+    const connectBtn = document.getElementById('connectBtn');
+    const status = document.getElementById('status');
+    const walletUI = document.getElementById('walletUI');
+    const balance = document.getElementById('balance');
+    const sendBtn = document.getElementById('sendBtn');
+    const receiveBtn = document.getElementById('receiveBtn');
+    const customAmount = document.getElementById('customAmount');
+    const setBtn = document.getElementById('setBtn');
 
-      let fakeBalance = 9999999.00;
+    function updateBalanceDisplay() {
+      balance.textContent = USDT Balance: ${fakeBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })};
+    }
 
-      function updateBalance() {
-        balanceDisplay.textContent = USDT Balance: ${fakeBalance.toLocaleString(undefined, { minimumFractionDigits: 2 })};
+    if (typeof window.ethereum !== 'undefined') {
+      status.textContent = '✅ MetaMask detected. Click connect.';
+    } else {
+      status.textContent = '❌ MetaMask not found. Please install it.';
+      connectBtn.disabled = true;
+    }
+
+    connectBtn.addEventListener('click', async () => {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        status.textContent = Connected: ${accounts[0].slice(0, 6)}...${accounts[0].slice(-4)};
+        walletUI.style.display = 'block';
+        fakeBalance = 9999999.00;
+        updateBalanceDisplay();
+      } catch (err) {
+        status.textContent = '❌ Connection failed.';
       }
+    });
 
-      if (typeof window.ethereum !== "undefined") {
-        status.textContent = "✅ MetaMask detected. Please connect your wallet.";
-        connectBtn.addEventListener("click", async () => {
-          try {
-            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-            status.textContent = ✅ Connected: ${accounts[0]};
-            walletSection.style.display = "block";
-            updateBalance();
-          } catch (error) {
-            status.textContent = "❌ Connection rejected or failed.";
-            console.error(error);
-          }
-        });
+    sendBtn.addEventListener('click', () => {
+      if (fakeBalance >= 100) {
+        fakeBalance -= 100;
+        updateBalanceDisplay();
+        alert('✅ Fake 100 USDT sent!');
       } else {
-        status.textContent = "❌ MetaMask not detected. Please install it.";
+        alert('❌ Not enough balance!');
       }
+    });
 
-      fakeSendBtn.addEventListener("click", () => {
-        if (fakeBalance >= 100) {
-          fakeBalance -= 100;
-          updateBalance();
-          alert("Fake 100 USDT sent!");
-        } else {
-          alert("Insufficient balance.");
-        }
-      });
+    receiveBtn.addEventListener('click', () => {
+      fakeBalance += 500;
+      updateBalanceDisplay();
+      alert('✅ Fake 500 USDT received!');
+    });
 
-      fakeReceiveBtn.addEventListener("click", () => {
-        fakeBalance += 500;
-        updateBalance();
-        alert("Fake 500 USDT received!");
-      });
-
-      setBalanceBtn.addEventListener("click", () => {
-        const inputVal = parseFloat(customBalanceInput.value);
-        if (!isNaN(inputVal) && inputVal >= 0) {
-          fakeBalance = inputVal;
-          updateBalance();
-          alert("Fake balance updated!");
-        } else {
-          alert("Please enter a valid number.");
-        }
-      });
+    setBtn.addEventListener('click', () => {
+      const val = parseFloat(customAmount.value);
+      if (!isNaN(val) && val >= 0) {
+        fakeBalance = val;
+        updateBalanceDisplay();
+        alert(✅ Balance set to ${val});
+      } else {
+        alert('❌ Invalid amount');
+      }
     });
   </script>
 
