@@ -2,36 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Flash USDT Demo</title>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      text-align: center;
+      padding-top: 50px;
+    }
+    #connectBtn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
   <h1>Flash USDT Demo</h1>
   <button id="connectBtn">Connect MetaMask</button>
-  <br /><br />
-  <input type="number" id="amount" placeholder="Amount to flash" />
-  <button id="flashBtn">Flash USDT</button>
-  <p id="status"></p>
+  <p id="status">Checking for MetaMask...</p>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const connectBtn = document.getElementById("connectBtn");
-    const status = document.getElementById("status");
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const connectBtn = document.getElementById("connectBtn");
+      const status = document.getElementById("status");
 
-    if (typeof window.ethereum !== "undefined") {
-      status.innerText = "MetaMask is detected.";
-      connectBtn.addEventListener("click", async () => {
-        try {
-          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-          status.innerText = "Connected: " + accounts[0];
-          console.log("Connected account:", accounts[0]);
-        } catch (error) {
-          status.innerText = "Connection failed.";
-          console.error(error);
-        }
-      });
-    } else {
-      status.innerText = "MetaMask not detected. Please install it.";
+      if (typeof window.ethereum !== "undefined") {
+        status.innerText = "MetaMask is detected.";
+        connectBtn.addEventListener("click", async () => {
+          try {
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            status.innerText = "Connected: " + accounts[0];
+            console.log("Connected account:", accounts[0]);
+          } catch (error) {
+            status.innerText = "Connection failed or rejected.";
+            console.error(error);
+          }
+        });
+      } else {
+        status.innerText = "MetaMask not detected. Please install MetaMask.";
+      }
+    });
+  </script>
+</body>
+</html>
     }
   });
 </script>
